@@ -43,6 +43,7 @@ namespace sgl {
 		std::optional<ObjFile> LoadFromObj(const std::string& file);
 
 	private:
+		void ComputeFlat(ObjFile obj);
 		std::vector<std::string> textures_ = {};
 		sgl::Buffer point_buffer_ = {};
 		sgl::Buffer normal_buffer_ = {};
