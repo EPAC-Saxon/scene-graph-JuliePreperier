@@ -97,8 +97,9 @@ namespace sgl {
 		//Then we need to go through all the scene.
 		for (auto& node : scene_tree_) {
 			// For each check if there is a mesh and if there is call the Draw method.
-			if (node->GetLocalMesh()) {
-				node->GetLocalMesh()->Draw(*program_, texture_manager_);
+			const auto& mesh = node->GetLocalMesh();
+			if (mesh!=nullptr) {
+				mesh->Draw(*program_, texture_manager_,node->GetLocalModel(dt));
 			}
 		}
 	}
