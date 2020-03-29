@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <gl/glew.h>
+#include <iostream>
 #include "Mesh.h"
 
 namespace sgl {
@@ -22,12 +23,12 @@ namespace sgl {
 			flat_positions_.push_back(maybe_obj.value().positions[maybe_obj.value().indices[i][0]].y);
 			flat_positions_.push_back(maybe_obj.value().positions[maybe_obj.value().indices[i][0]].z);
 
-			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].x);
-			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].y);
-			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].z);
+			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][1]].x);
+			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][1]].y);
 
-			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][2]].x);
-			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][2]].y);
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][2]].x);
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][2]].y);
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][2]].z);
 
 		}
 
@@ -67,8 +68,6 @@ namespace sgl {
 		glDeleteVertexArrays(1, &vertex_array_object_);
 	}
 
-
-
 	void Mesh::SetTextures(std::initializer_list<std::string> values)
 	{
 		textures_.clear();
@@ -103,14 +102,12 @@ namespace sgl {
 
 	std::optional<sgl::Mesh::ObjFile> Mesh::LoadFromObj(const std::string& file)
 	{
-		std::optional<sgl::Mesh::ObjFile> opt_obj;
 		ObjFile obj{};
 
 		std::string line;
 		std::ifstream ifs;
 		// open file
 		ifs.open(file);
-
 
 		if (!ifs.is_open()) {
 			throw std::runtime_error("Erreur à l'ouverture du fichier \n");
@@ -159,33 +156,28 @@ namespace sgl {
 				}
 				case 'f':
 					// f contient l'index du point(a), le UV (b) et l'index de la normal(c) -> a/b/c
-					for (int i = 0; i <= 3; i++) {
+					for (int i = 0; i < 3; i++) {
 						std::string token;
 						iss >> token;
 						std::istringstream inneriss(token);
 						std::string tok;
 
 						std::getline(inneriss, tok, '/');
-						float valIndicesPoint = atof(tok.c_str());
+						auto valIndicesPoint = atoi(tok.c_str());
 
 						std::getline(inneriss, tok, '/');
-						float valIndicesTexture = atof(tok.c_str());
+						auto valIndicesTexture = atoi(tok.c_str());
 
 						std::getline(inneriss, tok, '/');
-						float valIndicesNormal = atof(tok.c_str());
-
-						obj.indices[0].fill(valIndicesPoint - 1); // PointIndex
-						obj.indices[1].fill(valIndicesNormal - 1); // NormalIndex
-						obj.indices[2].fill(valIndicesTexture - 1); // TextureIndex
+						auto valIndicesNormal = atoi(tok.c_str());
+						obj.indices.push_back({ valIndicesPoint - 1 ,valIndicesTexture - 1,valIndicesNormal - 1 });
 					}
 					break;
 				}
 			}
-			opt_obj = obj;
 			ifs.close();
 		}
-
-		return opt_obj;
+		return obj;
 	}
 
 } // End namespace sgl.
