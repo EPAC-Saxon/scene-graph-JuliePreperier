@@ -69,9 +69,11 @@ namespace sgl {
 		program_->Use();
 
 		//Create a matrix for the Perspective
+		// Value taken from main.cpp -> SoftwareGL.sln (old project)
+		// Theta = (90 * M_PI / 180), zfar = 1000, znear = 0.1f
 		sgl::matrix projection(
-			(size.second / size.first) * 1 / std::tan(60 / 2), 0, 0, 0,
-			0, 1 / std::tan(60 / 2), 0, 0,
+			(size.second / size.first) * 1 / std::tan((90 * M_PI / 180) / 2), 0, 0, 0,
+			0, 1 / std::tan((90 * M_PI / 180) / 2), 0, 0,
 			0, 0, -(1000 + 0.1) / (1000 - 0.1), -1,
 			0, 0, -(2 * 1000 * 0.1) / (1000 - 0.1), 0);
 
