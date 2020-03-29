@@ -44,7 +44,7 @@ namespace sgl {
 	{
 		bool isfounded = false;
 		std::shared_ptr<Scene> root;
-		for (auto node : *this) {
+		for (auto& node : *this) {
 			auto parent = node->GetParent();
 			if (parent == nullptr && node->IsRoot() && !isfounded) {
 				isfounded = true;
