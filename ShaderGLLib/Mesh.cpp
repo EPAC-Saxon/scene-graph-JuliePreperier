@@ -103,6 +103,7 @@ namespace sgl {
 
 	std::optional<sgl::Mesh::ObjFile> Mesh::LoadFromObj(const std::string& file)
 	{
+		std::optional<sgl::Mesh::ObjFile> opt_obj;
 		ObjFile obj{};
 
 		std::string line;
@@ -118,6 +119,7 @@ namespace sgl {
 		{
 			while (std::getline(ifs, line))
 			{
+				std::vector<std::string> splitStr;
 				std::stringstream iss(line);
 				char value;
 				// iss enlève le caractère de la ligne. -> en faisant iss >> value on prend le premier caractère de la ligne et on l'enlève de la ligne.
@@ -157,7 +159,7 @@ namespace sgl {
 				}
 				case 'f':
 					// f contient l'index du point(a), le UV (b) et l'index de la normal(c) -> a/b/c
-					for (int i = 0; i < 3; i++) {
+					for (int i = 0; i <= 3; i++) {
 						std::string token;
 						iss >> token;
 						std::istringstream inneriss(token);
@@ -179,10 +181,11 @@ namespace sgl {
 					break;
 				}
 			}
+			opt_obj = obj;
 			ifs.close();
 		}
 
-		return obj;
+		return opt_obj;
 	}
 
 } // End namespace sgl.

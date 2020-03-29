@@ -2,7 +2,7 @@
 
 namespace test {
 
-	TEST_F(MeshTest, CreateCubeMeshTest)
+	/*TEST_F(MeshTest, CreateCubeMeshTest)
 	{
 		EXPECT_FALSE(mesh_);
 		mesh_ = std::make_shared<sgl::Mesh>("../Asset/CubeUVNormal.obj");
@@ -13,7 +13,7 @@ namespace test {
 		EXPECT_LE(18, mesh_->IndexSize());
 		EXPECT_GE(36, mesh_->IndexSize());
 		EXPECT_TRUE(mesh_);
-	}
+	}*/
 
 	TEST_F(MeshTest, CreateTorusMeshTest)
 	{
