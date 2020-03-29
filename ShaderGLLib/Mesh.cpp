@@ -6,12 +6,6 @@
 #include "Mesh.h"
 
 namespace sgl {
-	struct Vertex {
-		sgl::vector3 position_;
-		sgl::vector3 normal_;
-		sgl::vector2 texture_coord_;
-
-	};
 
 	Mesh::Mesh(const std::string& file)
 	{
@@ -21,19 +15,65 @@ namespace sgl {
 			throw std::runtime_error("Obj empty.");
 		}
 
+		for (size_t i = 0; i < maybe_obj.value().indices.size(); ++i) {
+			flat_indices_.push_back(i);
 
+			flat_positions_.push_back(maybe_obj.value().positions[maybe_obj.value().indices[i][0]].x);
+			flat_positions_.push_back(maybe_obj.value().positions[maybe_obj.value().indices[i][0]].y);
+			flat_positions_.push_back(maybe_obj.value().positions[maybe_obj.value().indices[i][0]].z);
+
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].x);
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].y);
+			flat_normals_.push_back(maybe_obj.value().normals[maybe_obj.value().indices[i][1]].z);
+
+			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][2]].x);
+			flat_textures_.push_back(maybe_obj.value().textures[maybe_obj.value().indices[i][2]].y);
+
+		}
+
+		point_buffer_.BindCopy(flat_positions_.size() * sizeof(float), flat_positions_.data());
+		normal_buffer_.BindCopy(flat_normals_.size() * sizeof(float), flat_normals_.data());
+		texture_buffer_.BindCopy(flat_textures_.size() * sizeof(float), flat_textures_.data());
+		index_buffer_.BindCopy(flat_indices_.size() * sizeof(float), flat_indices_.data());
+		index_size_ = flat_indices_.size();
+
+		glGenVertexArrays(1, &vertex_array_object_);
+		glBindVertexArray(vertex_array_object_);
+		
+		/* Points */
+		point_buffer_.Bind();
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,NULL);
+		point_buffer_.UnBind();
+		
+		/* Normals */
+		normal_buffer_.Bind();
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		normal_buffer_.UnBind();
+
+		/* Texture */
+		texture_buffer_.Bind();
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		texture_buffer_.UnBind();
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+
+		glBindVertexArray(0);
 	}
 
 	Mesh::~Mesh()
 	{
-#pragma message ("You have to complete this code!")
+		glDeleteVertexArrays(1, &vertex_array_object_);
 	}
 
 
 
 	void Mesh::SetTextures(std::initializer_list<std::string> values)
 	{
-#pragma message ("You have to complete this code!")
+		textures_.clear();
+		textures_.assign(values);
+		
 	}
 
 	void Mesh::Draw(
@@ -41,42 +81,25 @@ namespace sgl {
 		const sgl::TextureManager& texture_manager,
 		const sgl::matrix& model /*= {}*/) const
 	{
-#pragma message ("You have to complete this code!")
+		texture_manager.DisableAll();
+
+		for (auto& tex : textures_) {
+			texture_manager.EnableTexture(tex);
+		}
+
+		glBindVertexArray(vertex_array_object_);
+
+		program.UniformMatrix("modelMat", model);
+
+		index_buffer_.Bind();
+		glDrawElements(GL_TRIANGLES, index_size_, GL_UNSIGNED_INT, nullptr);
+		index_buffer_.UnBind();
+
+		glBindVertexArray(0);
+		texture_manager.DisableAll();
 	}
 
-	// TODO
-	/*void Mesh::ComputeFlat(ObjFile obj)
-	{
-		std::vector<Vertex> vertices;
-		//obj.indices[0] // PointIndex
-		//obj.indices[1] // NormalIndex
-		//obj.indices[2] // TextureIndex
-		
-		for (size_t i = 0; i < obj.indices[0].size(); ++i) {
-			Vertex v;
-			v.position_ = points[pointsIndex[i]];
-			v.normal_ = normals[normalsIndex[i]];
-			v.texture_coord_ = UVs[uvIndex[i]];
 
-			flat_indices_.push_back(i);
-			vertices.push_back(v);
-			std::cout << "Position v N#: " << i << ": " << v.position_ << std::endl;
-		}
-
-		for (Vertex v : vertices) {
-			flat_positions_.push_back(v.position_.x);
-			flat_positions_.push_back(v.position_.y);
-			flat_positions_.push_back(v.position_.z);
-
-			flat_normals_.push_back(v.normal_.x);
-			flat_normals_.push_back(v.normal_.y);
-			flat_normals_.push_back(v.normal_.z);
-
-			flat_textures_.push_back(v.texture_coord_.x);
-			flat_textures_.push_back(v.texture_coord_.y);
-		}
-
-	}*/
 
 	std::optional<sgl::Mesh::ObjFile> Mesh::LoadFromObj(const std::string& file)
 	{
