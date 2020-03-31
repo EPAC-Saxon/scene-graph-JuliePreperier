@@ -1,0 +1,10 @@
+Erreur dans Device : "Assets" au lieu de "Asset"
+Erreur dans Mesh :
+
+Repartition des points :
+1/1pt presence
+3/3pt code
+2/3 (6x0.5) test
+0/3pt version final
+
+TOTAL : 6

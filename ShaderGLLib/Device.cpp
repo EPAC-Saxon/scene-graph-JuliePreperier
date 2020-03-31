@@ -53,8 +53,8 @@ namespace sgl {
 		Shader vertexShader(ShaderType::VERTEX_SHADER);
 		Shader fragmentShader(ShaderType::FRAGMENT_SHADER);
 
-		if (!vertexShader.LoadFromFile("../Assets/SimpleVertex.glsl") ||
-			!fragmentShader.LoadFromFile("../Assets/SimpleFragment.glsl")) {
+		if (!vertexShader.LoadFromFile("../Asset/SimpleVertex.glsl") ||
+			!fragmentShader.LoadFromFile("../Asset/SimpleFragment.glsl")) {
 			exit(-1);
 		}
 
